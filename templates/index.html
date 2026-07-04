@@ -180,6 +180,22 @@
             color: #fff;
         }
 
+        .btn-delete-all {
+            background: none;
+            border: 1px solid #333;
+            color: #888;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-delete-all:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
         .file-list {
             background: #161616;
             border-radius: 14px;
@@ -345,7 +361,10 @@
 
         <div class="file-list-header">
             <h2>Files <span class="file-count" id="fileCount"></span></h2>
-            <button class="btn-refresh" id="refreshBtn">Refresh</button>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-refresh" id="refreshBtn">Refresh</button>
+                <button class="btn-delete-all" id="deleteAllBtn">Delete All</button>
+            </div>
         </div>
 
         <div class="file-list" id="fileList">
@@ -537,6 +556,18 @@
         }
 
         refreshBtn.addEventListener('click', loadFiles);
+
+        document.getElementById('deleteAllBtn').addEventListener('click', async () => {
+            if (!confirm('Delete ALL files? This cannot be undone.')) return;
+            try {
+                const res = await fetch('/api/delete-all', { method: 'DELETE' });
+                const data = await res.json();
+                showToast(`Deleted ${data.count} file(s)`);
+                loadFiles();
+            } catch (err) {
+                showToast('Delete failed');
+            }
+        });
 
         // Auto-refresh every 3 seconds
         setInterval(loadFiles, 3000);

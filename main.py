@@ -90,6 +90,16 @@ def download_file(filename):
     )
 
 
+@app.route('/api/delete-all', methods=['DELETE'])
+def delete_all_files():
+    deleted = []
+    for f in app.config['UPLOAD_FOLDER'].iterdir():
+        if f.is_file():
+            f.unlink()
+            deleted.append(f.name)
+    return jsonify({'deleted': deleted, 'count': len(deleted)})
+
+
 @app.route('/api/delete/<path:filename>', methods=['DELETE'])
 def delete_file(filename):
     file_path = app.config['UPLOAD_FOLDER'] / filename
